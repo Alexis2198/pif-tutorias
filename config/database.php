@@ -5,11 +5,10 @@
  * En local, define un archivo .env o expórtalas en tu shell.
  */
 
-declare(strict_types=1);
-
-function db(): Pdo\Mysql {
+function db(): PDO
+{
     static $pdo = null;
-    if ($pdo instanceof Pdo\Mysql) {
+    if ($pdo instanceof PDO) {
         return $pdo;
     }
 
@@ -27,13 +26,25 @@ function db(): Pdo\Mysql {
         PDO::ATTR_EMULATE_PREPARES   => false,
     ];
 
-    $useSsl = filter_var(getenv('DB_SSL') ?: 'false', FILTER_VALIDATE_BOOL);
+    /*
+     * Aiven exige TLS. El certificado de la CA se monta en certs/ca.pem.
+     * En Railway, el archivo puede no existir en disco si lo pasas como
+     * variable de entorno; en ese caso lo escribimos a un archivo temporal.
+     */
     $caPath = __DIR__ . '/../certs/ca.pem';
 
-    if ($useSsl && is_readable($caPath)) {
-        $options[Pdo\Mysql::ATTR_SSL_CA] = $caPath;
-        $options[Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT] = true;
+    $caEnv = getenv('DB_SSL_CA');
+    if ($caEnv && !file_exists($caPath)) {
+        // Contenido del cert pasado como env var multilínea
+        $caPath = sys_get_temp_dir() . '/aiven-ca.pem';
+        file_put_contents($caPath, $caEnv);
     }
 
-    return $pdo = Pdo\Mysql::connect($dsn, $user, $pass, $options);
+    if (file_exists($caPath)) {
+        $options[PDO::MYSQL_ATTR_SSL_CA] = $caPath;
+        // Aiven usa certificados válidos; mantener la verificación activa.
+        $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = true;
+    }
+
+    return new PDO($dsn, $user, $pass, $options);
 }
