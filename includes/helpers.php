@@ -44,23 +44,47 @@ function student_label(array $s): string
  * Barra de paginación. Reserva el número de página bajo la clave 'page'
  * y conserva el resto del query string actual para no perder filtros.
  */
+const PAGER_WINDOW = 5;
+
 function render_pager(int $total, int $page, string $path): void
 {
     $pages = (int) max(1, ceil($total / PER_PAGE));
     if ($pages <= 1) {
         return;
     }
-    $params = $_GET;
-    echo '<nav class="pager">';
-    for ($p = 1; $p <= $pages; $p++) {
-        if ($p === $page) {
-            echo '<span class="pager-item pager-current">' . $p . '</span>';
-            continue;
+
+    // Ventana deslizante centrada en la página actual, de ancho fijo.
+    $half = intdiv(PAGER_WINDOW, 2);
+    $start = max(1, $page - $half);
+    $end = min($pages, $start + PAGER_WINDOW - 1);
+    $start = max(1, $end - PAGER_WINDOW + 1); // recentra al llegar al final
+
+    $base = $_GET;
+    $link = function (int $p, string $label, bool $current = false, bool $disabled = false) use ($base, $path): string {
+        if ($disabled) {
+            return '<span class="pager-item pager-disabled">' . $label . '</span>';
         }
-        $params['page'] = $p;
-        $href = $path . '?' . http_build_query($params);
-        echo '<a class="pager-item" href="' . e($href) . '">' . $p . '</a>';
+        if ($current) {
+            return '<span class="pager-item pager-current">' . $label . '</span>';
+        }
+        $base['page'] = $p;
+        return '<a class="pager-item" href="' . e($path . '?' . http_build_query($base)) . '">' . $label . '</a>';
+    };
+
+    echo '<nav class="pager">';
+    echo $link(1, '«', false, $page <= 1);
+    echo $link($page - 1, '‹', false, $page <= 1);
+    if ($start > 1) {
+        echo '<span class="pager-item pager-gap">…</span>';
     }
+    for ($p = $start; $p <= $end; $p++) {
+        echo $link($p, (string) $p, $p === $page);
+    }
+    if ($end < $pages) {
+        echo '<span class="pager-item pager-gap">…</span>';
+    }
+    echo $link($page + 1, '›', false, $page >= $pages);
+    echo $link($pages, '»', false, $page >= $pages);
     echo '</nav>';
 }
 
