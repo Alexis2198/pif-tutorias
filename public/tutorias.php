@@ -271,13 +271,12 @@ layout_header('Tutorías');
 <div class="table-wrap">
 <table>
     <thead><tr>
-        <th>ID</th><th>Sesión</th><th>Fecha</th><th>Docente</th><th>Estudiante</th><th>Materia</th>
+        <th>Sesión</th><th>Fecha</th><th>Docente</th><th>Estudiante</th><th>Materia</th>
         <th>Modalidad</th><th>Estado</th><th>Satisf.</th><th></th>
     </tr></thead>
     <tbody>
     <?php foreach ($rows as $r): ?>
         <tr>
-            <td><?= e($r['id']) ?></td>
             <td><?= e($r['sesion_id'] ?? '—') ?></td>
             <td><?= e($r['fecha']) ?></td>
             <td><?= e($r['docente']) ?></td>
