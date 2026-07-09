@@ -199,6 +199,8 @@ legend { font-size: .82rem; font-weight: 700; color: var(--muted); padding: 0 .4
 }
 .pager a.pager-item:hover { background: var(--accent-soft); }
 .pager .pager-current { background: var(--accent); color: #fff; border-color: var(--accent); }
+.pager .pager-disabled { color: #b7c0cc; background: #f5f7fa; cursor: default; }
+.pager .pager-gap { border: none; background: transparent; color: var(--muted); }
 
 /* Mensajes */
 .flash { padding: .7rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: .9rem; }
