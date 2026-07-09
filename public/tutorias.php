@@ -268,6 +268,7 @@ layout_header('Tutorías');
     <?php endif; ?>
 </details>
 
+<div class="table-wrap">
 <table>
     <thead><tr>
         <th>ID</th><th>Sesión</th><th>Fecha</th><th>Docente</th><th>Estudiante</th><th>Materia</th>
@@ -294,6 +295,7 @@ layout_header('Tutorías');
     <?php endforeach; ?>
     </tbody>
 </table>
+</div>
 <?php render_pager($total, $page, '/tutorias.php'); ?>
 <?php
 layout_footer();

@@ -67,6 +67,7 @@ layout_header('Docentes');
     </form>
 </details>
 
+<div class="table-wrap">
 <table>
     <thead><tr><th>ID</th><th>Nombre</th><th>Departamento</th><th>Categoría</th><th></th></tr></thead>
     <tbody>
@@ -85,6 +86,7 @@ layout_header('Docentes');
     <?php endforeach; ?>
     </tbody>
 </table>
+</div>
 <?php render_pager($total, $page, '/docentes.php'); ?>
 <?php
 layout_footer();

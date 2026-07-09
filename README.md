@@ -56,7 +56,3 @@ La imagen `php:apache` escucha en el 80. Si Railway no enruta correctamente, añ
 ```
 RUN sed -i "s/Listen 80/Listen \${PORT}/" /etc/apache2/ports.conf
 ```
-
-## Conexión Power BI
-
-Usa el conector MySQL con la misma cadena. Crea una tabla calendario en DAX relacionada con `tutorias[fecha]` para inteligencia temporal. Define la tasa de ausentismo como medida, no como columna calculada. Modela tutorías con `DISTINCTCOUNT(sesion_id)` y atenciones como conteo de filas.

@@ -66,7 +66,8 @@ layout_header('Estudiantes');
 <!-- Selección múltiple: marca estudiantes y crea una tutoría grupal.
      Los seleccionados viajan por GET a tutorias.php como estudiante_ids[]. -->
 <form method="get" action="/tutorias.php">
-    <table>
+    <div class="table-wrap">
+<table>
         <thead><tr>
             <th></th><th>ID</th><th>Nombre</th><th>Carrera</th><th>Semestre</th><th></th>
         </tr></thead>
@@ -87,6 +88,7 @@ layout_header('Estudiantes');
         <?php endforeach; ?>
         </tbody>
     </table>
+</div>
     <div class="form-actions" style="margin-top:1rem;">
         <button type="submit">Crear tutoría grupal con los seleccionados</button>
         <span class="hint">La selección aplica a los estudiantes visibles en esta página.</span>

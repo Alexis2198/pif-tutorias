@@ -23,16 +23,25 @@ layout_header('Registro de Tutorías');
         <p><?= e($error) ?></p>
     </div>
 <?php else: ?>
-    <div class="card stats">
-        <p>Conexión a Aiven activa.</p>
-        <ul>
-            <li>Docentes registrados: <?= e($stats['docentes']) ?></li>
-            <li>Estudiantes registrados: <?= e($stats['estudiantes']) ?></li>
-            <li>Atenciones registradas (filas): <?= e($stats['atenciones']) ?></li>
-            <li>Sesiones de tutoría (sesion_id distintos): <?= e($stats['sesiones']) ?></li>
-        </ul>
-        <p class="hint">Una sesión grupal agrupa varias atenciones bajo un mismo sesion_id. En Power BI, tutorías = DISTINCTCOUNT(sesion_id) y atenciones = conteo de filas.</p>
-    </div>
+    <p class="status-ok">Conexión a Aiven activa.</p>
+    <section class="metrics">
+        <article class="metric">
+            <span class="metric-label">Docentes</span>
+            <span class="metric-value"><?= e($stats['docentes']) ?></span>
+        </article>
+        <article class="metric">
+            <span class="metric-label">Estudiantes</span>
+            <span class="metric-value"><?= e($stats['estudiantes']) ?></span>
+        </article>
+        <article class="metric">
+            <span class="metric-label">Atenciones</span>
+            <span class="metric-value"><?= e($stats['atenciones']) ?></span>
+        </article>
+        <article class="metric">
+            <span class="metric-label">Sesiones</span>
+            <span class="metric-value"><?= e($stats['sesiones']) ?></span>
+        </article>
+    </section>
 <?php endif; ?>
 <?php
 layout_footer();
