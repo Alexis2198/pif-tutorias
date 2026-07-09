@@ -1,6 +1,6 @@
 /* ============================================================
    Registro de Tutorías. Consola de datos, identidad teal.
-   Space Grotesk (títulos) · Inter (UI) · JetBrains Mono (datos)
+   Sistema de fuentes locales (sin dependencias externas)
    ============================================================ */
 
 :root {
@@ -30,9 +30,9 @@
     --shadow: 0 8px 24px -12px rgba(15, 23, 42, .18);
     --ring: 0 0 0 3px rgba(15, 118, 110, .22);
 
-    --font-ui: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    --font-display: "Space Grotesk", var(--font-ui);
-    --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --font-ui: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-display: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: "SF Mono", "Cascadia Code", "Consolas", "Liberation Mono", monospace;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -75,6 +75,7 @@ body {
     color: var(--ink);
     background: var(--canvas);
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Barra superior fija con desenfoque */
@@ -175,8 +176,11 @@ h2 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; mar
 
 /* Tira de métricas (inicio) */
 .metrics {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
     gap: 1rem;
     margin-bottom: 1.1rem;
 }
@@ -190,6 +194,10 @@ h2 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; mar
     gap: .35rem;
     position: relative;
     overflow: hidden;
+    -webkit-box-flex: 1;
+    -ms-flex: 1 1 160px;
+    flex: 1 1 160px;
+    min-width: 140px;
 }
 .metric::before {
     content: "";
@@ -261,7 +269,20 @@ input:focus, select:focus { outline: none; border-color: var(--accent); box-shad
 input:focus-visible, select:focus-visible { outline: none; }
 select { cursor: pointer; }
 
-.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1rem; }
+.grid-2 {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.grid-2 > * {
+    -webkit-box-flex: 1;
+    -ms-flex: 1 1 190px;
+    flex: 1 1 190px;
+    min-width: 150px;
+}
 
 /* Botones */
 button, .btn {
@@ -332,6 +353,9 @@ td a.del { color: var(--danger); }
     background: var(--surface-2);
 }
 .checklist label {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
     flex-direction: row;
     align-items: center;
     gap: .6rem;
@@ -343,7 +367,37 @@ td a.del { color: var(--danger); }
     cursor: pointer;
 }
 .checklist label:hover { background: var(--accent-tint); }
-.checklist input[type="checkbox"] { width: auto; accent-color: var(--accent); }
+.checklist input[type="checkbox"] { 
+    width: auto; 
+    accent-color: var(--accent);
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--accent);
+    border-radius: 4px;
+    background: var(--surface);
+    cursor: pointer;
+    position: relative;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+}
+.checklist input[type="checkbox"]:checked {
+    background: var(--accent);
+}
+.checklist input[type="checkbox"]:checked::after {
+    content: "✓";
+    color: var(--on-accent);
+    position: absolute;
+    top: -2px;
+    left: 1px;
+    font-size: 12px;
+    font-weight: 700;
+}
+.checklist input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
 .checklist.empty { color: var(--muted); font-style: italic; padding: .7rem; }
 
 /* Chips */
@@ -416,6 +470,7 @@ a:focus-visible, button:focus-visible, .btn:focus-visible, summary:focus-visible
     .topbar { gap: 1rem; padding: .7rem 1rem; }
     main { padding: 1.5rem 1rem 3rem; }
     .metric-value { font-size: 1.6rem; }
+    .metric { -webkit-box-flex: 1; -ms-flex: 1 1 100%; flex: 1 1 100%; }
 }
 
 /* Respeto a motion reducido */
