@@ -29,39 +29,43 @@ if ($action === 'delete' && $id) {
 }
 
 $editing = ($action === 'edit' && $id) ? $crud->find($id) : null;
-$rows = $crud->all();
+
+$page = current_page();
+$total = $crud->count();
+$offset = ($page - 1) * PER_PAGE;
+$rows = $crud->all('id DESC', PER_PAGE, $offset);
 
 layout_header('Docentes');
 ?>
-<form method="post" class="card">
-    <input type="hidden" name="id" value="<?= e($editing['id'] ?? '') ?>">
-    <label>Nombre
-        <input type="text" name="nombre" required
-               value="<?= e($editing['nombre'] ?? '') ?>">
-    </label>
-    <label>Departamento
-        <select name="departamento" required>
-            <?php foreach ($departamentos as $d): ?>
-                <option value="<?= e($d) ?>"
-                    <?= ($editing['departamento'] ?? '') === $d ? 'selected' : '' ?>>
-                    <?= e($d) ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </label>
-    <label>Categoría
-        <select name="categoria" required>
-            <?php foreach ($categorias as $c): ?>
-                <option value="<?= e($c) ?>"
-                    <?= ($editing['categoria'] ?? '') === $c ? 'selected' : '' ?>>
-                    <?= e($c) ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </label>
-    <button type="submit"><?= $editing ? 'Actualizar' : 'Guardar' ?></button>
-    <?php if ($editing): ?><a href="/docentes.php">Cancelar</a><?php endif; ?>
-</form>
+<details class="panel"<?= $editing ? ' open' : '' ?>>
+    <summary><?= $editing ? 'Editar docente' : 'Agregar docente' ?></summary>
+    <form method="post" class="card">
+        <input type="hidden" name="id" value="<?= e($editing['id'] ?? '') ?>">
+        <label>Nombre
+            <input type="text" name="nombre" required value="<?= e($editing['nombre'] ?? '') ?>">
+        </label>
+        <div class="grid-2">
+            <label>Departamento
+                <select name="departamento" required>
+                    <?php foreach ($departamentos as $d): ?>
+                        <option value="<?= e($d) ?>" <?= ($editing['departamento'] ?? '') === $d ? 'selected' : '' ?>><?= e($d) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
+            <label>Categoría
+                <select name="categoria" required>
+                    <?php foreach ($categorias as $c): ?>
+                        <option value="<?= e($c) ?>" <?= ($editing['categoria'] ?? '') === $c ? 'selected' : '' ?>><?= e($c) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </label>
+        </div>
+        <div class="form-actions">
+            <button type="submit"><?= $editing ? 'Actualizar' : 'Guardar' ?></button>
+            <?php if ($editing): ?><a href="/docentes.php">Cancelar</a><?php endif; ?>
+        </div>
+    </form>
+</details>
 
 <table>
     <thead><tr><th>ID</th><th>Nombre</th><th>Departamento</th><th>Categoría</th><th></th></tr></thead>
@@ -74,12 +78,13 @@ layout_header('Docentes');
             <td><?= e($r['categoria']) ?></td>
             <td>
                 <a href="/docentes.php?action=edit&id=<?= e($r['id']) ?>">Editar</a>
-                <a href="/docentes.php?action=delete&id=<?= e($r['id']) ?>"
+                <a class="del" href="/docentes.php?action=delete&id=<?= e($r['id']) ?>"
                    onclick="return confirm('¿Eliminar este docente?')">Eliminar</a>
             </td>
         </tr>
     <?php endforeach; ?>
     </tbody>
 </table>
+<?php render_pager($total, $page, '/docentes.php'); ?>
 <?php
 layout_footer();

@@ -22,10 +22,23 @@ class Crud
         $this->columns = $columns;
     }
 
-    public function all(string $orderBy = 'id DESC'): array
+    /**
+     * Devuelve filas con paginación opcional. Si $limit es null trae todo.
+     * $limit y $offset se castean a int, así que no abren inyección.
+     */
+    public function all(string $orderBy = 'id DESC', ?int $limit = null, ?int $offset = null): array
     {
         $sql = "SELECT * FROM {$this->table} ORDER BY {$orderBy}";
+        if ($limit !== null) {
+            $sql .= ' LIMIT ' . (int) $limit . ' OFFSET ' . (int) max(0, $offset ?? 0);
+        }
         return $this->db->query($sql)->fetchAll();
+    }
+
+    /** Total de filas de la tabla, base para calcular páginas. */
+    public function count(): int
+    {
+        return (int) $this->db->query("SELECT COUNT(*) c FROM {$this->table}")->fetch()['c'];
     }
 
     public function find(int $id): ?array
@@ -45,6 +58,42 @@ class Crud
         $stmt = $this->db->prepare($sql);
         $stmt->execute($this->orderedValues($data));
         return (int) $this->db->lastInsertId();
+    }
+
+    /**
+     * Inserta una fila por estudiante compartiendo los datos de sesión.
+     * Todas las filas del grupo llevan el mismo sesion_id, igual al id de
+     * la primera fila insertada, lo que garantiza unicidad sin secuencias.
+     * Una tutoría individual es el caso N = 1. Devuelve el sesion_id.
+     * Requiere que 'estudiante_id' y 'sesion_id' estén en $this->columns.
+     */
+    public function createGroup(array $shared, array $studentIds): int
+    {
+        $studentIds = array_values(array_unique(array_map('intval', $studentIds)));
+        if (!$studentIds) {
+            throw new InvalidArgumentException('Sin estudiantes seleccionados.');
+        }
+
+        $this->db->beginTransaction();
+        try {
+            $sesionId = null;
+            foreach ($studentIds as $sid) {
+                $row = $shared;
+                $row['estudiante_id'] = $sid;
+                $row['sesion_id'] = $sesionId; // null en la primera fila
+                $newId = $this->create($row);
+                if ($sesionId === null) {
+                    $sesionId = $newId;
+                    $this->db->prepare("UPDATE {$this->table} SET sesion_id = ? WHERE id = ?")
+                             ->execute([$sesionId, $newId]);
+                }
+            }
+            $this->db->commit();
+            return $sesionId;
+        } catch (Throwable $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
     }
 
     public function update(int $id, array $data): void

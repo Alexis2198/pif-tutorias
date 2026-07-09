@@ -8,7 +8,8 @@ try {
     $stats = [
         'docentes'    => db()->query('SELECT COUNT(*) c FROM docentes')->fetch()['c'],
         'estudiantes' => db()->query('SELECT COUNT(*) c FROM estudiantes')->fetch()['c'],
-        'tutorias'    => db()->query('SELECT COUNT(*) c FROM tutorias')->fetch()['c'],
+        'atenciones'  => db()->query('SELECT COUNT(*) c FROM tutorias')->fetch()['c'],
+        'sesiones'    => db()->query('SELECT COUNT(DISTINCT sesion_id) c FROM tutorias')->fetch()['c'],
     ];
 } catch (Throwable $ex) {
     $error = $ex->getMessage();
@@ -22,13 +23,15 @@ layout_header('Registro de Tutorías');
         <p><?= e($error) ?></p>
     </div>
 <?php else: ?>
-    <div class="card">
+    <div class="card stats">
         <p>Conexión a Aiven activa.</p>
         <ul>
             <li>Docentes registrados: <?= e($stats['docentes']) ?></li>
             <li>Estudiantes registrados: <?= e($stats['estudiantes']) ?></li>
-            <li>Tutorías registradas: <?= e($stats['tutorias']) ?></li>
+            <li>Atenciones registradas (filas): <?= e($stats['atenciones']) ?></li>
+            <li>Sesiones de tutoría (sesion_id distintos): <?= e($stats['sesiones']) ?></li>
         </ul>
+        <p class="hint">Una sesión grupal agrupa varias atenciones bajo un mismo sesion_id. En Power BI, tutorías = DISTINCTCOUNT(sesion_id) y atenciones = conteo de filas.</p>
     </div>
 <?php endif; ?>
 <?php
